@@ -1,32 +1,30 @@
-import mahamains
 from matplotlib import pyplot as plt
+import mahamains
 
 com_maharashtra=mahamains.maharashtra_reader
 districts=mahamains.district_reader
-com_districts={}
-for i in range(len(districts)):
-    com_districts[districts[i]['Pincode']]=districts[i]['District']
 
-pin={}
-for i in range(len(com_maharashtra)):
-    x=com_maharashtra[i]['Registered_Office_Address']
+com_districts={}
+for district in districts:
+    com_districts[district['Pincode']]=district['District']
+
+pins={}
+for i in com_maharashtra:
+    x=i['Registered_Office_Address']
     x=x[-6:]
-    y=com_maharashtra[i]['DATE_OF_REGISTRATION']
+    y=i['DATE_OF_REGISTRATION']
     if y!='NA':
         y=y[-2:]
-        if x[0] =='4' and y=='15':
-            if x in pin.keys():
-                pin[x]+=1
+        if x!='000000' and y=='15':
+            if x in pins:
+                pins[x]+=1
             else:
-                pin[x]=1
+                pins[x]=1
 
 dist_com={}
-for key, value in pin.items():
-    if key in com_districts.keys():
-        if key in dist_com.keys():
-            dist_com[com_districts[key]]+=value
-        else:
-            dist_com[com_districts[key]]=value
+for pin, count in pins.items():
+    if pin in com_districts.keys():
+        dist_com[com_districts[pin]]=count
 
 district=[]
 count=[]
@@ -35,7 +33,7 @@ for key, value in dist_com.items():
     count.append(value)
     
 plt.bar(district, count)
-plt.xticks(range(len(district)), district)
+plt.xticks(range(len(district)), district, rotation='vertical')
 plt.xlabel('DISTRICTS')
 plt.ylabel('NO: OF COMPANIES')
 plt.show()
